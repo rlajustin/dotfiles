@@ -23,10 +23,10 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<S-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<S-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<S-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<S-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+vim.keymap.set('n', '<S-h>', '<C-w><C-h>', { desc = 'Move focus to the left window', noremap = true })
+vim.keymap.set('n', '<S-l>', '<C-w><C-l>', { desc = 'Move focus to the right window', noremap = true })
+vim.keymap.set('n', '<S-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window', noremap = true })
+vim.keymap.set('n', '<S-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window', noremap = true })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 vim.keymap.set('n', '<C-h>', '<C-w>H', { desc = 'Move window to the left' })
