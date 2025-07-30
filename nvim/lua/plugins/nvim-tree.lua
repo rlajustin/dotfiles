@@ -54,7 +54,7 @@ return {
       sync_root_with_cwd = true,
     }
 
-    vim.keymap.set('n', '<leader>e', require('nvim-tree.api').tree.toggle, { noremap = true, silent = true })
-    vim.keymap.set('n', '<leader>o', require('nvim-tree.api').tree.focus, { noremap = true, silent = true })
+    vim.keymap.set('n', '<leader>e', require('nvim-tree.api').tree.toggle, { noremap = true, silent = true, desc = 'Toggle nvim-tree' })
+    vim.keymap.set('n', '<leader>o', require('nvim-tree.api').tree.focus, { noremap = true, silent = true, desc = 'Focus nvim-tree' })
   end,
 }
