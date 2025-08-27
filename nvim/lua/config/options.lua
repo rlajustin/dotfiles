@@ -6,6 +6,9 @@ vim.o.number = true
 vim.o.relativenumber = true
 vim.o.mouse = 'a'
 
+vim.o.tabstop = 2
+vim.o.shiftwidth = 2
+
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
@@ -38,7 +41,8 @@ vim.o.splitbelow = true
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 vim.o.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+-- vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.opt.listchars = { tab = '  ', trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
@@ -55,7 +59,3 @@ vim.o.scrolloff = 10
 vim.o.confirm = true
 
 vim.o.winborder = 'rounded'
-
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
---

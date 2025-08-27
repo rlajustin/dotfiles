@@ -2,30 +2,26 @@ return { -- Autocompletion
   'saghen/blink.cmp',
   event = 'VimEnter',
   version = '1.*',
+  lazy = false,
   dependencies = {
     -- Snippet Engine
     {
       'L3MON4D3/LuaSnip',
-      version = '2.*',
-      build = (function()
-        -- Remove the below condition to re-enable on windows.
-        if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-          return
-        end
-        return 'make install_jsregexp'
-      end)(),
-      dependencies = {
-        -- `friendly-snippets` contains a variety of premade snippets.
-        --    See the README about individual language/framework/plugin snippets:
-        --    https://github.com/rafamadriz/friendly-snippets
-        -- {
-        --   'rafamadriz/friendly-snippets',
-        --   config = function()
-        --     require('luasnip.loaders.from_vscode').lazy_load()
-        --   end,
-        -- },
-      },
-      opts = {},
+      version = 'v2.*',
+      config = function()
+        require('luasnip.loaders.from_lua').load { paths = { '~/.config/nvim/lua/snippets/' } }
+
+        local luasnip = require 'luasnip'
+        luasnip.config.set_config {
+          -- Enable autotriggered snippets
+          keep_roots = true, --Link children
+          exit_roots = true, --Link children
+          enable_autosnippets = true,
+          link_children = true,
+          -- Use Tab (or some other key if you prefer) to trigger visual selection
+          -- store_selection_keys = '<Tab>',
+        }
+      end,
     },
     'folke/lazydev.nvim',
   },
@@ -33,37 +29,18 @@ return { -- Autocompletion
   --- @type blink.cmp.Config
   opts = {
     keymap = {
-      -- 'default' (recommended) for mappings similar to built-in completions
-      --   <c-y> to accept ([y]es) the completion.
-      --    This will auto-import if your LSP supports it.
-      --    This will expand snippets if the LSP sent a snippet.
-      -- 'super-tab' for tab to accept
-      -- 'enter' for enter to accept
-      -- 'none' for no mappings
-      --
-      -- For an understanding of why the 'default' preset is recommended,
-      -- you will need to read `:help ins-completion`
-      --
-      -- No, but seriously. Please read `:help ins-completion`, it is really good!
-      --
-      -- All presets have the following mappings:
-      -- <tab>/<s-tab>: move to right/left of your snippet expansion
-      -- <c-space>: Open menu or open docs if already open
-      -- <c-n>/<c-p> or <up>/<down>: Select next/previous item
-      -- <c-e>: Hide menu
-      -- <c-k>: Toggle signature help
-      --
-      -- See :h blink-cmp-config-keymap for defining your own keymap
-      preset = 'super-tab',
-
-      -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
-      --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
-    },
-
-    appearance = {
-      -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-      -- Adjusts spacing to ensure icons are aligned
-      nerd_font_variant = 'mono',
+      preset = 'default',
+      ['<C-j>'] = { 'select_next', 'fallback' },
+      ['<C-k>'] = { 'select_prev', 'fallback' },
+      ['<C-l>'] = { 'select_and_accept', 'fallback' },
+      ['<CR>'] = {
+        function(cmp)
+          if cmp.is_visible() then
+            return cmp.select_and_accept()
+          end
+        end,
+        'fallback',
+      },
     },
 
     completion = {
@@ -72,14 +49,18 @@ return { -- Autocompletion
       documentation = { auto_show = false, auto_show_delay_ms = 500 },
     },
 
+    appearance = {
+      nerd_font_variant = 'mono',
+    },
+
+    snippets = { preset = 'luasnip' },
+
     sources = {
-      default = { 'lsp', 'path', 'snippets', 'lazydev' },
+      default = { 'lsp', 'path', 'snippets', 'lazydev', 'buffer' },
       providers = {
         lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
       },
     },
-
-    snippets = { preset = 'luasnip' },
 
     -- Blink.cmp includes an optional, recommended rust fuzzy matcher,
     -- which automatically downloads a prebuilt binary when enabled.
