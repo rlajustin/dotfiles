@@ -1,8 +1,8 @@
-return{
-s(
-    {trig = "phy-art", dscr = "Physics article"},
+return {
+  s(
+    { trig = 'phy-art', dscr = 'Physics article' },
     fmta(
-    [[
+      [[
 	\documentclass[letterpaper,11pt]{article}
 	\usepackage[left=1.6cm,right=1.6cm,top=2.5cm,bottom=2.5cm,headheight=1.0cm]{geometry}
 	\usepackage[activeacute,spanish,es-tabla]{babel}
@@ -133,7 +133,7 @@ s(
 	\end{multicols}
 	\end{document}
     ]],
-    {
+      {
         i(1),
         i(2),
         i(3),
@@ -141,15 +141,15 @@ s(
         i(5),
         i(6),
         i(7),
-        i(8)
-    }
+        i(8),
+      }
     )
-),
+  ),
 
-s(
-    {trig = "math-notes", dscr = "Math notes"},
+  s(
+    { trig = 'math-notes', dscr = 'Math notes' },
     fmta(
-    [[
+      [[
     \newcommand{\notestitle}{<>}
     \newcommand{\notesprof}{<>}
     \newcommand{\notesauthor}{<>}
@@ -169,18 +169,18 @@ s(
     \input{../eof.tex}
     \end{document}
     ]],
-    {
-        i(1,"Title"),
-        i(2,"Profesor/course"),
-        i(3,"Author"),
-    }
+      {
+        i(1, 'Title'),
+        i(2, 'Profesor/course'),
+        i(3, 'Author'),
+      }
     )
-),
+  ),
 
-s(
-    {trig = "writing", dscr = "Writing"},
+  s(
+    { trig = 'writing', dscr = 'Writing' },
     fmta(
-    [[
+      [[
 	\documentclass[letterpaper,twoside,11pt]{article}
 	\usepackage[left=1.6cm,right=1.6cm,top=2.5cm,bottom=2.0cm,headheight=1.0cm]{geometry}
 	\usepackage[activeacute,spanish,es-tabla]{babel}
@@ -254,18 +254,18 @@ s(
 	\end{multicols}
 	\end{document}
     ]],
-    {
+      {
         i(1),
         i(2),
-        i(3)
-    }
+        i(3),
+      }
     )
-),
+  ),
 
-s(
-    {trig = "bib", dscr = "Bibliography"},
+  s(
+    { trig = 'bib', dscr = 'Bibliography' },
     fmta(
-    [[
+      [[
         
         
         
@@ -275,14 +275,14 @@ s(
         \Urlmuskip=0mu plus 1mu\relax
         %\phantom{\cite{}}
     ]],
-    {}
+      {}
     )
-),
+  ),
 
-s(
-    {trig = "min-math", dscr = "Minimal math template"},
+  s(
+    { trig = 'min-math', dscr = 'Minimal math template' },
     fmta(
-    [[
+      [[
     \documentclass{article}
     \usepackage[utf8]{inputenc}
     \usepackage[tbtags]{amsmath}
@@ -298,11 +298,11 @@ s(
 
     \end{document}
     ]],
-    {
+      {
         i(1),
         i(2),
-        i(3)
-    }
+        i(3),
+      }
     )
-),
+  ),
 }

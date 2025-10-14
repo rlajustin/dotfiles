@@ -11,6 +11,25 @@ local r = ls.restore_node
 local in_mathzone = function()
   return vim.fn['vimtex#syntax#in_mathzone']() == 1
 end
+--
+-- Add this function after your existing auxiliary functions
+local not_in_latex_command = function()
+  local line = vim.api.nvim_get_current_line()
+  local col = vim.api.nvim_win_get_cursor(0)[2]
+
+  -- Get text before cursor
+  local text_before_cursor = line:sub(1, col)
+
+  -- Check if there's a backslash followed by letters without whitespace before cursor
+  local in_command = text_before_cursor:match '\\%w*$'
+
+  return not in_command
+end
+
+-- Combined condition for math mode and not in LaTeX command
+local math_and_not_command = function()
+  return in_mathzone() and not_in_latex_command()
+end
 
 -- Visual placeholder
 -- taken from https://ejmastnak.com/
@@ -111,7 +130,7 @@ return {
     t '\\mathcal{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'mr', name = 'Roman math font', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -120,7 +139,7 @@ return {
     t '\\mathrm{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'mb', name = 'Bold math font', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -129,7 +148,7 @@ return {
     t '\\mathbf{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ms', name = 'Sans serif math font', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -138,7 +157,7 @@ return {
     t '\\mathsf{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'mt', name = 'Typewriter math font', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -147,7 +166,7 @@ return {
     t '\\mathtt{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'mn', name = 'Normal math font', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -156,7 +175,7 @@ return {
     t '\\mathnormal{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'mi', name = 'Italic math font', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -165,7 +184,7 @@ return {
     t '\\mathit{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'mf', name = 'Euler Fraktur math font', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -174,7 +193,7 @@ return {
     t '\\mathfrak{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'mk', name = 'Blackboard bold math font', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -183,7 +202,7 @@ return {
     t '\\mathbb{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Display environments and alignment structures
 
@@ -333,7 +352,7 @@ return {
     d(1, generate_cases),
     t { '', '' },
     t '\\end{cases}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'br', name = 'Display line break', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -342,7 +361,7 @@ return {
     t '\\\\',
     t { '', '' },
     i(1),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'itr', name = 'Short text between lines', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -351,7 +370,7 @@ return {
     t '\\intertext{',
     v(1, 'text'),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'tx', name = 'Text inside display', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -360,28 +379,28 @@ return {
     t '\\text{',
     v(1, 'text'),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'dib', name = 'Display page break', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\displaybreak',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'dis', name = 'Displaystyle', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\displaystyle',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ty', name = 'Textstyle', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\textstyle',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Equation numbering and tags
 
@@ -390,7 +409,7 @@ return {
       return snip.captures[1]
     end),
     t '\\notag',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'tag', name = 'Equation tag', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -408,7 +427,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'teq', name = 'Last number equation' }, {
     f(function(_, snip)
@@ -433,7 +452,7 @@ return {
       return snip.captures[1] .. 'matrix'
     end),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '([bBpvV])(%d+)h(%d+)', name = 'New homogeneous matrix', snippetType = 'autosnippet', regTrig = true }, {
     t '\\begin{',
@@ -449,7 +468,7 @@ return {
       return snip.captures[1] .. 'matrix'
     end),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '([bBpvV])gn', name = 'New generic matrix', snippetType = 'autosnippet', regTrig = true }, {
     t '\\begin{',
@@ -503,35 +522,21 @@ return {
       return snip.captures[1] .. 'matrix'
     end),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Subscripts and superscripts
-
-  s({ trig = ';', name = 'Short subscript', snippetType = 'autosnippet', wordTrig = false }, {
-    t '_',
-  }, { condition = in_mathzone }),
 
   s({ trig = ':', name = 'Subscript', snippetType = 'autosnippet', wordTrig = false }, {
     t '_{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
-  s({ trig = '´', name = 'Short superscript', snippetType = 'autosnippet', wordTrig = false }, {
-    t '^',
-  }, { condition = in_mathzone }),
-
-  s({ trig = '¨', name = 'Superscript', snippetType = 'autosnippet', wordTrig = false }, {
+  s({ trig = ';', name = 'Superscript', snippetType = 'autosnippet', wordTrig = false }, {
     t '^{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
-
-  s({ trig = '¨', name = 'Superscript', snippetType = 'autosnippet', wordTrig = false }, {
-    t '^{',
-    d(1, get_visual),
-    t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'st', name = 'Stacking', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -542,7 +547,7 @@ return {
     t ' \\\\ ',
     i(2),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Compound structures
 
@@ -564,7 +569,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'lxr', name = 'Left relation arrow', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -584,7 +589,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'cf', name = 'Continued fraction', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -614,7 +619,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'bx', name = 'Boxed formula', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -623,7 +628,7 @@ return {
     t '\\boxed{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ff', name = 'Fraction', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -652,7 +657,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'bm', name = 'Binomial coefficient', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -681,7 +686,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Decorations
 
@@ -694,7 +699,7 @@ return {
     t '}{',
     v(2, 'material'),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'bel', name = 'Place material below', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -705,7 +710,7 @@ return {
     t '}{',
     v(2, 'material'),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Limiting positions
 
@@ -714,11 +719,11 @@ return {
       return snip.captures[1]
     end),
     t '\\limits',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'nli', name = 'Right of the operator', snippetType = 'autosnippet' }, {
     t '\\nolimits',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Relations
 
@@ -727,7 +732,7 @@ return {
       return snip.captures[1]
     end),
     t '\\equiv',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'md', name = 'Mod operator', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -736,7 +741,7 @@ return {
     t '\\Mod{',
     i(1),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- local macro
   s({ trig = 'mod', name = 'Modular relation', snippetType = 'autosnippet' }, {
@@ -777,7 +782,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sbg', name = 'Left triangle', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -791,7 +796,7 @@ return {
         i(1, '\\ntriangleleft'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sgc', name = 'Right triangle', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -805,28 +810,28 @@ return {
         i(1, '\\ntriangleright'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ne', name = 'Not equal', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\ne',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'nr', name = 'Relation negation', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\not',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'app', name = 'Approx', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\approx',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'cn', name = 'Congruent', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -840,21 +845,21 @@ return {
         i(1, '\\ncong'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'le', name = 'Less or equal', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\le',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ge', name = 'Greater or equal', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\ge',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'pc', name = 'Precedes', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -868,7 +873,7 @@ return {
         i(1, '\\nprec'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sx', name = 'Succedes', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -882,7 +887,7 @@ return {
         i(1, '\\nsucc'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 're', name = 'Relation', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -896,7 +901,7 @@ return {
         i(1, '\\nsim'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Operators
 
@@ -935,7 +940,7 @@ return {
         t ' \\right\\rceil',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'fl', name = 'Floor', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -953,7 +958,7 @@ return {
         t ' \\right\\rfloor',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sq', name = 'Square root', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -984,21 +989,21 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'imp', name = 'Imaginary part', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Im',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'rpa', name = 'Real part', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Re',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'opm', name = 'Mod operator', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1007,70 +1012,70 @@ return {
     i(1, '...'),
     t ' \\bmod ',
     i(2, '...'),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'mp', name = 'Minus plus', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\mp',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'pm', name = 'Plus minus', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\pm',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'tm', name = 'Times', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\times',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'cd', name = 'Centered dot', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\cdot',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'cir', name = 'Circle', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\circ',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'opl', name = 'Oplus', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\oplus',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'omt', name = 'Otimes', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\otimes',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'dv', name = 'Middle bar', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\mid',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ndv', name = 'Middle bar', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\centernot\\mid',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'xm', name = 'Maximum', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1086,7 +1091,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'mu', name = 'Minimum', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1102,7 +1107,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'nf', name = 'Infimum', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1118,7 +1123,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sr', name = 'Supremum', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1134,63 +1139,63 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'arg', name = 'Argument', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arg',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'deg', name = 'Degree', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\deg',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'det', name = 'Determinant', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\det',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'dim', name = 'Dimension', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\dim',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'gc', name = 'Greatest common divisor', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\gcd',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'hm', name = 'Hom', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\hom',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'kr', name = 'Kernel', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\ker',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'lap', name = 'Laplacian', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\nabla^2 ',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'div', name = 'Divergence', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1208,7 +1213,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'cur', name = 'Curl', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1226,7 +1231,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ba', name = 'Bra', snippetType = 'autosnippet' }, {
     c(1, {
@@ -1241,7 +1246,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'kt', name = 'Ket', snippetType = 'autosnippet' }, {
     c(1, {
@@ -1256,7 +1261,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'bk', name = 'Braket', snippetType = 'autosnippet' }, {
     c(1, {
@@ -1275,7 +1280,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Operators with limits
 
@@ -1295,7 +1300,7 @@ return {
         i(1, '\\lim'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'lif', name = 'liminf', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1313,7 +1318,7 @@ return {
         i(1, '\\liminf'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'lsu', name = 'limsup', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1331,7 +1336,7 @@ return {
         i(1, '\\limsup'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'lvf', name = 'varliminf', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1349,7 +1354,7 @@ return {
         i(1, '\\varliminf'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'lvu', name = 'varlimsup', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1367,7 +1372,7 @@ return {
         i(1, '\\varlimsup'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Functions
 
@@ -1380,7 +1385,7 @@ return {
     i(2, 'dom'),
     t ' \\to ',
     i(3, 'cod'),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'fd', name = 'Function definition' }, {
     f(function(_, snip)
@@ -1409,189 +1414,189 @@ return {
       return snip.captures[1]
     end),
     t '\\sin',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'cos', name = 'cos', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\cos',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'tan', name = 'tan', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\tan',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'cot', name = 'cot', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\cot',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sec', name = 'sec', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\sec',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'cc', name = 'csc', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\csc',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'asin', name = 'arcsin', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arcsin',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'acos', name = 'arccos', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arccos',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'atan', name = 'arctan', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arctan',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'acot', name = 'arccot', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arccot',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'asec', name = 'arcsec', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arcsec',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'acc', name = 'arccsc', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arccsc',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sinh', name = 'sinh', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\sinh',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'cosh', name = 'cosh', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\cosh',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'tanh', name = 'tanh', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\tanh',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'coth', name = 'coth', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\coth',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sch', name = 'sech', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\sech',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'hcc', name = 'csch', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\csch',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ahsin', name = 'arcsinh', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arcsinh',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ahcos', name = 'arccosh', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arccosh',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ahtan', name = 'arctanh', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arctanh',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ahcot', name = 'arccoth', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arccoth',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ahsec', name = 'arcsech', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arcsech',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ahcc', name = 'arccsch', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\arccsch',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'xp', name = 'exp', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\exp',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ln', name = 'ln', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\ln',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'lg', name = 'log', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\log',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Ellipsis
 
@@ -1600,42 +1605,42 @@ return {
       return snip.captures[1]
     end),
     t '\\ldots',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'cr', name = 'Centered dots', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\cdots',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'vd', name = 'Vertical dots', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\vdots',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'gd', name = 'Diagonal dots', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\ddots',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'cln', name = 'Colon', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t ':',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sln', name = 'Semicolon', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t ';',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Horizontal extensions
 
@@ -1646,7 +1651,7 @@ return {
     t '\\overline{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'und', name = 'Underline', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1655,7 +1660,7 @@ return {
     t '\\underline{',
     d(1, get_visual),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ovb', name = 'Overbrace', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1666,7 +1671,7 @@ return {
     t '}^{',
     i(2, 'top'),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'unb', name = 'Underbrace', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1677,7 +1682,7 @@ return {
     t '}_{',
     i(2, 'bottom'),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Delimiters
 
@@ -1688,7 +1693,7 @@ return {
     t '\\left( ',
     d(1, get_visual),
     t ' \\right)',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ds', name = 'Brackets', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1697,7 +1702,7 @@ return {
     t '\\left[ ',
     d(1, get_visual),
     t ' \\right]',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'bb', name = 'Braces', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1706,7 +1711,7 @@ return {
     t '\\{ ',
     d(1, get_visual),
     t ' \\}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'db', name = 'Extensible braces', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1715,7 +1720,7 @@ return {
     t '\\left\\{ ',
     d(1, get_visual),
     t ' \\right\\}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'dk', name = 'Angle brackets', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1733,7 +1738,7 @@ return {
         t ' \\rangle',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'da', name = 'Pipes', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1751,7 +1756,7 @@ return {
         t ' \\rvert',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'dn', name = 'Double pipes', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1769,7 +1774,7 @@ return {
         t ' \\rVert',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'big', name = 'Big-d delimiters', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1789,7 +1794,7 @@ return {
         i(1, '\\Bigg'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Spacing commands
 
@@ -1798,63 +1803,63 @@ return {
       return snip.captures[1]
     end),
     t '\\,',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'mdn', name = 'Medium space', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\:',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'tkp', name = 'Thick space', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\;',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'enp', name = 'Enskip', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\enskip',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'qu', name = 'Quad', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\quad',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'qq', name = 'Double quad', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\qquad',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'thn', name = 'Negative thin space', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\!',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'men', name = 'Negative medium space', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\negmedspace',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'tkn', name = 'Negative thick space', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\negthickspace',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'hs', name = 'Horizontal space', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1863,7 +1868,7 @@ return {
     t '\\hspace{',
     i(1),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'vs', name = 'Vertical space', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -1872,7 +1877,7 @@ return {
     t '\\vspace{',
     i(1),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Greek alphabet
 
@@ -1881,238 +1886,238 @@ return {
       return snip.captures[1]
     end),
     t '\\alpha',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]b', name = 'Beta', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\beta',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]c', name = 'Chi', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\chi',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]D', name = 'Uppercase delta', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Delta',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]d', name = 'Lowercase delta', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\delta',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]e', name = 'Epsilon', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\varepsilon',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]G', name = 'Uppercase gamma', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Gamma',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]g', name = 'Lowercase gamma', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\gamma',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]h', name = 'Eta', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\eta',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]i', name = 'Iota', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\iota',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]k', name = 'Kappa', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\kappa',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]L', name = 'Uppercase lambda', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Lambda',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]l', name = 'Lowercase lambda', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\lambda',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]m', name = 'Mu', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\mu',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]n', name = 'Nu', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\nu',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]O', name = 'Uppercase omega', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Omega',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]o', name = 'Lowercase omega', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\omega',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]Ph', name = 'Uppercase phi', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Phi',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]ph', name = 'Lowecase phi', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\varphi',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]Pi', name = 'Uppercase pi', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Pi',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]pi', name = 'Lowercase pi', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\pi',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]Ps', name = 'Uppercase psi', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Psi',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]ps', name = 'Lowercase psi', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\psi',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]r', name = 'Rho', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\rho',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]S', name = 'Uppercase sigma', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Sigma',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]s', name = 'Lowercase sigma', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\sigma',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]ta', name = 'Tau', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\tau',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]Th', name = 'Uppercase theta', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Theta',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]th', name = 'Lowercase theta', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\theta',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]U', name = 'Uppercase upsilon', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Upsilon',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]u', name = 'Lowecase upsilon', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\upsilon',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]X', name = 'Uppercase xi', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\Xi',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]x', name = 'Lowercase xi', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\xi',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = '[.]z', name = 'Zeta', snippetType = 'autosnippet', regTrig = true }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\zeta',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Letter-shaped symbols
 
@@ -2121,63 +2126,63 @@ return {
       return snip.captures[1]
     end),
     t '\\aleph',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'hb', name = 'Beth', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\beth',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'hd', name = 'Daleth', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\daleth',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'hg', name = 'Gimel', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\gimel',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'll', name = 'ell', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\ell',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'cm', name = 'Set complement', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\complement',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'hr', name = 'hbar', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\hbar',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'hl', name = 'hslash', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\hslash',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'pt', name = 'Partial', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\partial',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Miscellaneous symbols
 
@@ -2186,56 +2191,56 @@ return {
       return snip.captures[1]
     end),
     t '\\$',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'hh', name = 'Numeral', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\#',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'fy', name = 'Infinity', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\infty',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'pr', name = 'Prime', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\prime',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'per', name = 'Percentaje', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\%',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'amp', name = 'Ampersand', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\&',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ang', name = 'Angle', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\angle',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'nb', name = 'Nabla', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\nabla',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ch', name = 'Section symbol' }, {
     f(function(_, snip)
@@ -2272,7 +2277,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ht', name = 'Hat', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2290,7 +2295,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'rng', name = 'Math ring', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2299,7 +2304,7 @@ return {
     t '\\mathring{',
     v(1, '...'),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'til', name = 'Tilde', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2317,7 +2322,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'vv', name = 'Vector', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2335,7 +2340,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Logic
 
@@ -2344,63 +2349,63 @@ return {
       return snip.captures[1]
     end),
     t '\\forall',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ex', name = 'Exists', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\exists',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'nx', name = 'Not exist', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\nexists',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'lt', name = 'Logic negation', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\lnot',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'lan', name = 'Logic and', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\land',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'lor', name = 'Logic or', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\lor',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ip', name = 'Implies', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\implies',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ib', name = 'Implied by', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\impliedby',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'iff', name = 'If and only if', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\iff',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Sets and inclusion
 
@@ -2409,21 +2414,21 @@ return {
       return snip.captures[1]
     end),
     t '\\in',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ntn', name = 'Not in', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\notin',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'na', name = 'Owns', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\ni',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'vc', name = 'Empty set', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2437,21 +2442,21 @@ return {
         i(1, '\\varnothing'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'nun', name = 'Union', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\cup',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'bun', name = 'Big union', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\bigcup',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sun', name = 'Big subscript union', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2460,7 +2465,7 @@ return {
     t '\\bigcup_{',
     i(1),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'dun', name = 'Big definite union', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2471,21 +2476,21 @@ return {
     t '}^{',
     i(2),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'nit', name = 'Intersection', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\cap',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'bit', name = 'Big intersection', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\bigcap',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sit', name = 'Big subscript intersection', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2494,7 +2499,7 @@ return {
     t '\\bigcap_{',
     i(1),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'dit', name = 'Big definite intersection', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2505,21 +2510,21 @@ return {
     t '}^{',
     i(2),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sf', name = 'Set difference', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\setminus',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sbs', name = 'Subset', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\subset',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sbq', name = 'Subset or equals', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2533,14 +2538,14 @@ return {
         i(1, '\\nsubseteq'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sus', name = 'Contains', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\supset',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'suq', name = 'Contains or equals', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2554,7 +2559,7 @@ return {
         i(1, '\\nsupseteq'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'setd', name = 'Dots set', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2565,7 +2570,7 @@ return {
     t ' \\std ',
     i(2),
     t ' \\}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'setb', name = 'Bar set', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2576,7 +2581,7 @@ return {
     t ' \\mid ',
     i(2),
     t ' \\}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Arrows
 
@@ -2585,21 +2590,21 @@ return {
       return snip.captures[1]
     end),
     t '\\to ',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'lar', name = 'Long left arrow', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\longleftarrow',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
-  s({ trig = 'to', name = 'Long maps to', snippetType = 'autosnippet' }, {
+  s({ trig = 'to', name = 'Maps to', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
-    t '\\longmapsto',
-  }, { condition = in_mathzone }),
+    t '\\mapsto',
+  }, { condition = math_and_not_command }),
 
   -- Sums
 
@@ -2617,7 +2622,7 @@ return {
         i(1, '\\sum'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ss', name = 'Definite sum', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2628,7 +2633,7 @@ return {
     t '}^{',
     i(2),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sos', name = 'Subscript o-sum', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2637,7 +2642,7 @@ return {
     t '\\bigoplus_{',
     i(1),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'nos', name = 'Definite o-sum', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2648,7 +2653,7 @@ return {
     t '}^{',
     i(2),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Products
 
@@ -2666,7 +2671,7 @@ return {
         i(1, '\\prod'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'pp', name = 'Definite product', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2677,7 +2682,7 @@ return {
     t '}^{',
     i(2),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'sop', name = 'Subscript o-product', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2686,7 +2691,7 @@ return {
     t '\\bigotimes_{',
     i(1),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'nop', name = 'Definite o-product', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2697,7 +2702,7 @@ return {
     t '}^{',
     i(2),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Derivatives
 
@@ -2708,7 +2713,7 @@ return {
     t '\\dx{',
     i(1),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'der', name = 'Derivative', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2730,7 +2735,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ndr', name = 'n-th derivative', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2756,7 +2761,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'pdr', name = 'Partial derivative', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2778,7 +2783,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'npd', name = 'n-th partial derivative', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2804,7 +2809,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'evl', name = 'Derivative evaluation', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2813,7 +2818,7 @@ return {
     t '\\evl{',
     i(1),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   -- Integrals
 
@@ -2829,7 +2834,7 @@ return {
         i(1, '\\oint'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'its', name = 'Subscript integral', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2847,7 +2852,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'itd', name = 'Definite integral', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2858,7 +2863,7 @@ return {
     t '}^{',
     i(2),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'itbn', name = 'Double integral', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2872,7 +2877,7 @@ return {
         i(1, '\\oiint'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'itbs', name = 'Double integral subscript', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2890,7 +2895,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'ittn', name = 'Triple integral', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2904,7 +2909,7 @@ return {
         i(1, '\\oiiint'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'itts', name = 'Triple integral subscript', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2922,7 +2927,7 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'itqn', name = 'Quadruple integral', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2936,7 +2941,7 @@ return {
         i(1, '\\oiiint'),
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'itqs', name = 'Quadruple integral subscript', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2954,14 +2959,14 @@ return {
         t '}',
       },
     }),
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'itmn', name = 'Multiple integral', snippetType = 'autosnippet' }, {
     f(function(_, snip)
       return snip.captures[1]
     end),
     t '\\idotsint',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 
   s({ trig = 'itms', name = 'Multiple integral subscript', snippetType = 'autosnippet' }, {
     f(function(_, snip)
@@ -2970,5 +2975,5 @@ return {
     t '\\idotsint_{',
     i(1),
     t '}',
-  }, { condition = in_mathzone }),
+  }, { condition = math_and_not_command }),
 }
