@@ -438,10 +438,14 @@ return {
 
   -- Matrix-like environments
 
-  s({ trig = '([bBpvV])(%d+)x(%d+)', name = 'New matrix', snippetType = 'autosnippet', regTrig = true }, {
+  s({ trig = '([bBpvVm])(%d+)x(%d+)', name = 'New matrix', snippetType = 'autosnippet', regTrig = true }, {
     t '\\begin{',
     f(function(_, snip)
-      return snip.captures[1] .. 'matrix'
+      local prefix = snip.captures[1]
+      if prefix == 'm' then
+        return 'matrix'
+      end
+      return prefix .. 'matrix'
     end),
     t '}',
     t { '', '' },
@@ -449,15 +453,23 @@ return {
     t { '', '' },
     t '\\end{',
     f(function(_, snip)
-      return snip.captures[1] .. 'matrix'
+      local prefix = snip.captures[1]
+      if prefix == 'm' then
+        return 'matrix'
+      end
+      return prefix .. 'matrix'
     end),
     t '}',
   }, { condition = math_and_not_command }),
 
-  s({ trig = '([bBpvV])(%d+)h(%d+)', name = 'New homogeneous matrix', snippetType = 'autosnippet', regTrig = true }, {
+  s({ trig = '([bBpvVm])(%d+)h(%d+)', name = 'New homogeneous matrix', snippetType = 'autosnippet', regTrig = true }, {
     t '\\begin{',
     f(function(_, snip)
-      return snip.captures[1] .. 'matrix'
+      local prefix = snip.captures[1]
+      if prefix == 'm' then
+        return 'matrix'
+      end
+      return prefix .. 'matrix'
     end),
     t '}',
     t { '', '' },
@@ -465,15 +477,23 @@ return {
     t { '', '' },
     t '\\end{',
     f(function(_, snip)
-      return snip.captures[1] .. 'matrix'
+      local prefix = snip.captures[1]
+      if prefix == 'm' then
+        return 'matrix'
+      end
+      return prefix .. 'matrix'
     end),
     t '}',
   }, { condition = math_and_not_command }),
 
-  s({ trig = '([bBpvV])gn', name = 'New generic matrix', snippetType = 'autosnippet', regTrig = true }, {
+  s({ trig = '([bBpvVm])gn', name = 'New generic matrix', snippetType = 'autosnippet', regTrig = true }, {
     t '\\begin{',
     f(function(_, snip)
-      return snip.captures[1] .. 'matrix'
+      local prefix = snip.captures[1]
+      if prefix == 'm' then
+        return 'matrix'
+      end
+      return prefix .. 'matrix'
     end),
     t '}',
     t { '', '' },
@@ -519,7 +539,11 @@ return {
     t { '', '' },
     t '\\end{',
     f(function(_, snip)
-      return snip.captures[1] .. 'matrix'
+      local prefix = snip.captures[1]
+      if prefix == 'm' then
+        return 'matrix'
+      end
+      return prefix .. 'matrix'
     end),
     t '}',
   }, { condition = math_and_not_command }),

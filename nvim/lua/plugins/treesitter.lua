@@ -16,7 +16,7 @@ return { -- Highlight, edit, and navigate code
     }
     opts.indent = { enable = true, disable = { 'ruby' } }
     if type(opts.ensure_installed) == 'table' then
-      vim.list_extend(opts.ensure_installed, { 'bibtex' })
+      vim.list_extend(opts.ensure_installed, { 'bibtex', 'elixir', 'heex', 'eex' })
     end
     if type(opts.highlight.disable) == 'table' then
       vim.list_extend(opts.highlight.disable, { 'latex' })

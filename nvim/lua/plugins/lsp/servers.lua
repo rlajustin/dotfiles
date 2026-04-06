@@ -213,4 +213,31 @@ return {
   marksman = {},
 
   texlab = {},
+
+  elixirls = {
+    keys = {
+      {
+        '<leader>cp',
+        function()
+          local params = vim.lsp.make_position_params()
+          vim.lsp.execute {
+            command = 'manipulatePipes:serverid',
+            arguments = { 'toPipe', params.textDocument.uri, params.position.line, params.position.character },
+          }
+        end,
+        desc = 'To Pipe',
+      },
+      {
+        '<leader>cP',
+        function()
+          local params = vim.lsp.make_position_params()
+          vim.lsp.execute {
+            command = 'manipulatePipes:serverid',
+            arguments = { 'fromPipe', params.textDocument.uri, params.position.line, params.position.character },
+          }
+        end,
+        desc = 'From Pipe',
+      },
+    },
+  },
 }

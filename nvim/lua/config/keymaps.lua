@@ -2,8 +2,6 @@
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
-vim.keymap.set('n', '<leader>w', ':w<CR>')
-
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -37,3 +35,4 @@ vim.keymap.set('n', '<C-j>', '<C-w>J', { desc = 'Move window to the lower' })
 vim.keymap.set('n', '<C-k>', '<C-w>K', { desc = 'Move window to the upper' })
 
 vim.keymap.set('n', '<leader>O', ':only<CR>', { desc = 'Focus on current window', silent = true, noremap = true })
+vim.keymap.set('n', '<leader>w', ':w<CR>', { desc = 'Write buffer', silent = true, noremap = true })
