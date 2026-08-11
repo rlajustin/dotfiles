@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+# Keep VimTeX's native Zathura adapter while running the app-bundled binary.
+exec /Applications/Zathura.app/Contents/MacOS/zathura "$@"

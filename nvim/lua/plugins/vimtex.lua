@@ -14,6 +14,8 @@ return {
     { '<leader>l', '', desc = '+vimtex', ft = 'tex' },
   },
   init = function()
+    local zathura_bin = vim.fn.expand '~/dotfiles/zathura/bin'
+    vim.env.PATH = zathura_bin .. ':' .. vim.env.PATH
     vim.g.vimtex_view_method = 'zathura'
     vim.g.vimtex_view_automatic = 1
     vim.g.vimtex_compiler_latexmk = {

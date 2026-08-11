@@ -1,0 +1,6 @@
+# Get an API key from https://home.openweathermap.org/api_keys
+export API_KEY="replace-with-your-openweather-key"
+
+# Optional: set an exact location and skip IP-based approximate geolocation.
+# export LAT="40.7128"
+# export LON="-74.0060"

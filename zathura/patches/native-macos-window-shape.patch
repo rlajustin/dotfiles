@@ -1,0 +1,35 @@
+diff --git a/zathura/mac-titlebar.m b/zathura/mac-titlebar.m
+--- a/zathura/mac-titlebar.m
++++ b/zathura/mac-titlebar.m
+@@ -6,18 +6,24 @@
+ extern NSWindow *gdk_quartz_window_get_nswindow(GdkWindow *window);
+ 
+ void setup_macos_window(GtkWindow *window) {
+-    gtk_window_set_decorated(window, FALSE);
+-
+     GdkWindow *gdk_window = gtk_widget_get_window(GTK_WIDGET(window));
+     NSWindow *ns_window = gdk_quartz_window_get_nswindow(gdk_window);
+ 
+-    [ns_window setStyleMask:[ns_window styleMask] | NSWindowStyleMaskResizable ];
++    /* Keep a real titled AppKit window so WindowServer owns the outer shape. */
++    NSWindowStyleMask style_mask = [ns_window styleMask]
++        | NSWindowStyleMaskTitled
++        | NSWindowStyleMaskClosable
++        | NSWindowStyleMaskMiniaturizable
++        | NSWindowStyleMaskResizable
++        | NSWindowStyleMaskFullSizeContentView;
++    [ns_window setStyleMask:style_mask];
+     [ns_window setTitlebarAppearsTransparent:YES];
+     [ns_window setTitleVisibility:NSWindowTitleHidden];
++    [ns_window setTitlebarSeparatorStyle:NSTitlebarSeparatorStyleNone];
+     [ns_window setMovableByWindowBackground:YES];
+ 
+-    NSView *contentView = [ns_window contentView];
+-    [contentView setWantsLayer:YES];
+-    [[contentView layer] setCornerRadius:12.0];
+-
++    /* Hide title-bar controls without removing the native title-bar style. */
++    [[ns_window standardWindowButton:NSWindowCloseButton] setHidden:YES];
++    [[ns_window standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
++    [[ns_window standardWindowButton:NSWindowZoomButton] setHidden:YES];
+ }

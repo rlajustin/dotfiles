@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+# Load theme colors (switched by ~/.config/switch-theme.sh)
+source "$CONFIG_DIR/colors.sh"
+
+# General Bar Properties
+sketchybar --bar position=top \
+               height=34 \
+               blur_radius=20 \
+               color=0x00000000 \
+               display=main \
+               margin=0 \
+               topmost=off
+
+# Item Defaults
+sketchybar --default \
+           padding_left=2 \
+           padding_right=2 \
+           y_offset=-2 \
+           icon.font="JetBrainsMono Nerd Font:Regular:13.0" \
+           label.font="SF Pro:Semibold:12.0" \
+           icon.color="$COLOR_TEXT" \
+           label.color="$COLOR_TEXT" \
+           icon.padding_left=5 \
+           icon.padding_right=2 \
+           label.padding_left=2 \
+           label.padding_right=5 \
+           background.color="$COLOR_BG" \
+           background.corner_radius=7 \
+           background.height=28 \
+           blur_radius=20
+
+# --- Items on the right ---
+
+# Date and time
+sketchybar --add item date right \
+           --set date icon=󰃭  \
+                      padding_right=0 \
+                      label.padding_right=3 \
+                      icon.color="$COLOR_IRIS" \
+                      label.color="$COLOR_IRIS" \
+                      update_freq=1 \
+                      script="$PLUGIN_DIR/date.sh"
+
+# Volume level
+sketchybar --add item volume right \
+           --set volume icon.color="$COLOR_PINE" \
+                        label.color="$COLOR_PINE" \
+                        script="$PLUGIN_DIR/volume.sh" \
+           --subscribe volume volume_change
+
+# Battery level
+sketchybar --add item battery right \
+           --set battery icon.color="$COLOR_GOLD" \
+                         label.color="$COLOR_GOLD" \
+                         update_freq=10 \
+                         script="$PLUGIN_DIR/battery.sh" \
+           --subscribe battery system_woke power_source_change
+
+# Weather (OpenWeather API key is loaded from sketchybar_env).
+sketchybar --add item weather right \
+           --set weather icon.color="$COLOR_FOAM" \
+                         label.color="$COLOR_FOAM" \
+                         update_freq=600 \
+                         script="$PLUGIN_DIR/weather.sh" \
+           --subscribe weather system_woke
+
+# --- Items on the left ---
+
+# Space indicators: follow the spaces that actually exist instead of rendering
+# ten hard-coded buttons.
+SPACE_SIDS=($(/opt/homebrew/bin/yabai -m query --spaces | /usr/bin/jq -r '.[].index'))
+for sid in "${SPACE_SIDS[@]}"; do
+  sketchybar --add space space.$sid left \
+             --set space.$sid \
+                     space=$sid \
+                     icon=$sid \
+                     icon.padding_left=10 \
+                     icon.padding_right=0 \
+                     label.font="sketchybar-app-font:Regular:12.0" \
+                     label.padding_left=0 \
+                     label.padding_right=14 \
+                     label.color="$COLOR_ROSE" \
+                     icon.color="$COLOR_ROSE" \
+                     click_script="/opt/homebrew/bin/yabai -m space --focus $sid" \
+                     script="$PLUGIN_DIR/space.sh"
+done
+
+# Pull the first pill toward the physical left edge without tightening the
+# spacing between every space item.
+if [ "${#SPACE_SIDS[@]}" -gt 0 ]; then
+  sketchybar --set "space.${SPACE_SIDS[0]}" padding_left=0
+fi
+
+sketchybar --add item space_watcher center \
+           --set space_watcher background.drawing=off \
+                                 script="$PLUGIN_DIR/space_windows.sh" \
+           --subscribe space_watcher space_windows_change
+
+# Front app
+sketchybar --add item front_app left \
+           --set front_app icon.font="sketchybar-app-font:Regular:12.0" \
+                           icon.color="$COLOR_LOVE" \
+                           label.color="$COLOR_LOVE" \
+                           script="$PLUGIN_DIR/front_app.sh" \
+           --subscribe front_app front_app_switched
+
+sketchybar --update

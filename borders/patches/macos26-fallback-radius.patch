@@ -1,0 +1,12 @@
+diff --git a/src/windows.c b/src/windows.c
+--- a/src/windows.c
++++ b/src/windows.c
+@@ -73,7 +73,7 @@ bool windows_window_create(struct table* windows, uint32_t wid, uint64_t sid) {
+             }
+             if (radii_ref) CFRelease(radii_ref);
+           }
+-          radius = radius > 0 ? radius : 9;
++          radius = radius > 0 ? radius : 16;
+ 
+           border->radius = radius;
+           border->inner_radius = radius + 1;

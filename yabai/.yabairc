@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+
+# Canonical copy. During the gradual migration, ~/.yabairc should match this.
+YABAI_BIN="${YABAI_BIN:-/opt/homebrew/bin/yabai}"
+
+"$YABAI_BIN" -m signal --add event=dock_did_restart \
+  action="sudo -n $YABAI_BIN --load-sa >/dev/null 2>&1 || true"
+sudo -n "$YABAI_BIN" --load-sa >/dev/null 2>&1 || true
+
+"$YABAI_BIN" -m config layout bsp
+"$YABAI_BIN" -m config top_padding 5
+"$YABAI_BIN" -m config bottom_padding 8
+"$YABAI_BIN" -m config left_padding 8
+"$YABAI_BIN" -m config right_padding 8
+"$YABAI_BIN" -m config window_gap 8
+"$YABAI_BIN" -m config split_ratio 0.50
+"$YABAI_BIN" -m config split_type auto
+"$YABAI_BIN" -m config auto_balance off
+
+"$YABAI_BIN" -m config window_shadow off
+"$YABAI_BIN" -m config mouse_modifier ctrl
+"$YABAI_BIN" -m config mouse_action1 move
+"$YABAI_BIN" -m config mouse_action2 resize
+"$YABAI_BIN" -m config mouse_drop_action swap
+"$YABAI_BIN" -m config focus_follows_mouse off
+"$YABAI_BIN" -m config mouse_follows_focus off
+
+# A 34px bar centers its 28px item backgrounds with 3px below them. Combined
+# with 5px top padding, the visible item-to-window gap matches the 8px sides.
+"$YABAI_BIN" -m config external_bar main:34:0
+
+"$YABAI_BIN" -m rule --add app="^System Settings$" manage=off
+"$YABAI_BIN" -m rule --add app="^zathura$" manage=on
+
+"$YABAI_BIN" -m signal --add event=window_destroyed \
+  action="$YABAI_BIN -m query --windows --window >/dev/null 2>&1 || $YABAI_BIN -m window --focus mouse"
+"$YABAI_BIN" -m signal --add event=application_terminated \
+  action="$YABAI_BIN -m query --windows --window >/dev/null 2>&1 || $YABAI_BIN -m window --focus mouse"

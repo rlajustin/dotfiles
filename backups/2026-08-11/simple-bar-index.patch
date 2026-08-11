@@ -1,0 +1,49 @@
+diff --git a/index.jsx b/index.jsx
+index 17e1024..3616eb6 100644
+--- a/index.jsx
++++ b/index.jsx
+@@ -35,8 +35,8 @@ import * as Settings from "./lib/settings";
+ const refreshFrequency = false;
+ 
+ const settings = Settings.get();
++const yabaiPath = "/opt/homebrew/bin/yabai";
+ const {
+-  yabaiPath = "/usr/local/bin/yabai",
+   shell,
+   enableServer,
+   yabaiServerRefresh,
+@@ -137,23 +137,11 @@ function render({ output, error }) {
+         <Settings.Wrapper />
+         <div className="simple-bar__data">
+           <UserWidgets />
+-          <Zoom.Widget />
+-          <BrowserTrack.Widget />
+-          <Spotify.Widget />
+-          <Crypto.Widget />
+-          <Stock.Widget />
+-          <Music.Widget />
+-          <Mpd.Widget />
+-          <Weather.Widget />
+-          <Netstats.Widget />
+           <Cpu.Widget />
+           <Battery.Widget />
+-          <Mic.Widget />
+           <Sound.Widget />
+-          <ViscosityVPN.Widget />
+           <Wifi.Widget />
+-          <Keyboard.Widget />
+-          <DateDisplay.Widget />
++          <DateDisplay.Widget />
+           <Time.Widget />
+         </div>
+       </div>
+@@ -161,4 +149,18 @@ function render({ output, error }) {
+   );
+ }
+ 
++{/* Disabled widgets:
++  Zoom, BrowserTrack, Spotify, Crypto, Stock, Music, Mpd, Weather, Netstats,
++  Mic, ViscosityVPN, and Keyboard.
++*/}
++
+ export { command, refreshFrequency, render };
