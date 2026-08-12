@@ -1,0 +1,55 @@
+set selection-clipboard clipboard
+set selection-notification false
+
+# Rosé Pine Dawn
+# base      #faf4ed    surface   #fffaf3    overlay   #f2e9e1
+# muted     #9893a5    text      #575279    love      #b4637a
+# gold      #ea9d34    rose      #d7827e    pine      #286983
+
+# The native macOS window owns tint, opacity, blur, and rounded corners.
+# Zathura contributes only PDF ink; white paper pixels remain transparent.
+set default-bg rgba(0,0,0,0)
+set default-fg "#575279"
+
+set recolor true
+set recolor-reverse-video true
+set recolor-keephue true
+# White page pixels become transparent; black ink becomes Dawn text.
+set recolor-lightcolor rgba(255,255,255,0)
+set recolor-darkcolor "#575279"
+
+# Search results and link hints use the Rosé Pine Dawn rose accent.
+set highlight-color rgba(215,130,126,0.35)
+set highlight-active-color rgba(215,130,126,0.70)
+set highlight-fg "#575279"
+
+# Command line and completion menu.
+set inputbar-bg "#fffaf3"
+set inputbar-fg "#575279"
+set completion-bg "#faf4ed"
+set completion-fg "#575279"
+set completion-group-bg "#f2e9e1"
+set completion-group-fg "#286983"
+set completion-highlight-bg "#d7827e"
+set completion-highlight-fg "#faf4ed"
+
+# Notifications.
+set notification-bg "#f2e9e1"
+set notification-fg "#575279"
+set notification-error-bg "#b4637a"
+set notification-error-fg "#faf4ed"
+set notification-warning-bg "#ea9d34"
+set notification-warning-fg "#575279"
+
+# Document index and loading state.
+set index-bg "#faf4ed"
+set index-fg "#575279"
+set index-active-bg "#d7827e"
+set index-active-fg "#faf4ed"
+set render-loading-bg rgba(0,0,0,0)
+set render-loading-fg "#9893a5"
+
+# Keep the chrome hidden, but theme it if enabled interactively.
+set guioptions ""
+set statusbar-bg rgba(0,0,0,0)
+set statusbar-fg "#575279"

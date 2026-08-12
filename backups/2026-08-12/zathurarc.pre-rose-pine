@@ -1,0 +1,27 @@
+set selection-clipboard clipboard
+set selection-notification false
+
+set default-bg rgba(0,0,0,0)
+set default-fg rgba(255,255,255,1)
+
+# The native macOS window owns tint, opacity, blur, and rounded corners.
+# Zathura contributes only PDF ink; white paper pixels are fully transparent.
+set recolor true
+set recolor-reverse-video true
+set recolor-keephue true
+# White page pixels become recolor-lightcolor; black ink becomes
+# recolor-darkcolor. Remove the rectangular paper and keep its ink opaque.
+set recolor-lightcolor rgba(255,255,255,0)
+set recolor-darkcolor rgba(0,0,0,1)
+
+#for monitor
+#set window-width 960
+#set window-height 1027
+
+#for native
+#set window-width 640
+#set window-height 747
+
+set guioptions ""
+set inputbar-bg rgba(0,0,0,0)
+set inputbar-fg rgba(0,0,0,1)

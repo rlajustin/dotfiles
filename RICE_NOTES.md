@@ -259,3 +259,69 @@ Do not create symlinks until the user has reviewed this stage.
 - Made `bordersrc` resolve its dotfiles checkout dynamically and made the
   LaunchAgent installer replace an existing plist symlink atomically instead of
   risking a write through that symlink.
+
+## Yabai space hotkeys (2026-08-12)
+
+- Changed `option+1…9` to focus spaces and `option+shift+1…9` to send the
+  focused window without following it.
+- Added `option+shift+n` to create and focus a new space, then reload
+  SketchyBar so the new space indicator appears.
+- Added `option+shift+d` to destroy the focused space and reload SketchyBar
+  after a successful removal.
+
+## Border and spacing refinement (2026-08-12)
+
+- Increased JankyBorders width from 3 px to 4 px.
+- Increased Yabai's window, side, and bottom gaps from 8 px to 10 px.
+- Set top padding to 7 px so the 3 px below SketchyBar's centered pills plus
+  Yabai padding produces the same 10 px visible gap.
+- Increased SketchyBar's default outer item padding from 3 px to 5 px, making
+  the normal gap between adjacent pills 10 px.
+
+## Window-opacity toggle (2026-08-12)
+
+- Added `option+shift+o` to cycle three Yabai opacity states: native opacity;
+  unfocused windows at 80% with the focused window at 100%; and every window at
+  80%. Transitions take 0.2 seconds.
+
+## Zathura Rosé Pine Dawn colors (2026-08-12)
+
+- Added a canonical Zathura config under `zathura/.config/zathura/zathurarc`.
+- Preserved the native-window blur and transparent PDF paper treatment while
+  changing PDF ink to Dawn text (`#575279`).
+- Themed search highlights with the rose accent (`#d7827e`) and applied the
+  Dawn palette to command completion, notifications, index mode, loading text,
+  and hidden status/input chrome.
+
+## SketchyBar Yabai mode indicators (2026-08-12)
+
+- Added separate compact right-side indicators for the focused space's layout
+  (`BSP`, `STACK`, or `FLOAT`) and global window opacity (`80%` or `100%`).
+- Layout updates on space changes and immediately after its skhd bindings;
+  opacity updates from the state-aware opacity toggle script.
+- Refined the indicators after visual review: moved them directly after the
+  current-application item, changed layout names to lowercase, and replaced
+  the opacity percentage text with a compact native SketchyBar progress track.
+- Collapsed opacity into the layout pill as a fixed-rose vertical fill glyph to
+  the left of the layout name (`▇` for 80%, `█` for 100%), removing the extra
+  box and keeping the indicator slim.
+- Refined the opacity meter to a hairline (`╵` when dimmed, `│` when solid), so
+  the 80% state reads much lower without changing the actual window opacity.
+  Layout text now always uses the standard Dawn text color like the right-side
+  labels.
+- Replaced the meter after further visual review with a conventional status
+  badge: the lowercase layout is always shown, while a small rose dot appears
+  to its right only when window dimming is enabled.
+
+## Weather geolocation fallback (2026-08-12)
+
+- Diagnosed the weather placeholder as an `ipapi.co` HTTP 429 response, which
+  left OpenWeather without coordinates.
+- Added `ipwho.is` as a fallback geolocation provider while continuing to keep
+  the OpenWeather API key away from both location services.
+- Added explicit right-side padding to the combined Yabai layout/opacity pill.
+- Made the layout text provide its own right padding whenever the opacity badge
+  is hidden, since SketchyBar removes a hidden label's padding from the pill.
+- Expanded the opacity badge to three stable-width states: `○` for native
+  opacity, `◐` when only unfocused windows are dimmed, and `●` when every
+  window is dimmed.

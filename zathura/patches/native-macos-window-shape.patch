@@ -1,7 +1,14 @@
 diff --git a/zathura/mac-titlebar.m b/zathura/mac-titlebar.m
 --- a/zathura/mac-titlebar.m
 +++ b/zathura/mac-titlebar.m
-@@ -6,18 +6,24 @@
+@@ -1,5 +1,6 @@
+ #include <gtk/gtk.h>
+ #include <gdk/gdk.h>
+ #include <gdk/gdkquartz.h>
+ #import <AppKit/AppKit.h>
++#include <dlfcn.h>
+ #include "mac-titlebar.h"
+@@ -6,18 +7,68 @@
  extern NSWindow *gdk_quartz_window_get_nswindow(GdkWindow *window);
  
  void setup_macos_window(GtkWindow *window) {
@@ -23,6 +30,50 @@ diff --git a/zathura/mac-titlebar.m b/zathura/mac-titlebar.m
      [ns_window setTitleVisibility:NSWindowTitleHidden];
 +    [ns_window setTitlebarSeparatorStyle:NSTitlebarSeparatorStyleNone];
      [ns_window setMovableByWindowBackground:YES];
++
++    /*
++     * GTK/Cairo renders only PDF ink; the native window owns the single
++     * rounded, tinted, translucent background. "my beloved" uses Display P3
++     * (255, 250, 243), and iTerm transparency 0.1035017730496454 becomes
++     * AppKit opacity 0.8964982269503546.
++     */
++    [ns_window setOpaque:NO];
++    NSColor *background_color = [NSColor colorWithDisplayP3Red:1.0
++                                                        green:(250.0 / 255.0)
++                                                         blue:(243.0 / 255.0)
++                                                        alpha:0.8964982269503546];
++    [ns_window setBackgroundColor:background_color];
++    [ns_window setHasShadow:NO];
++
++    /*
++     * GTK paints a rectangular Cairo surface. Clip that surface to the same
++     * rounded shape as the native window so neither the PDF background nor
++     * the WindowServer backdrop blur remains visible in the corner cutouts.
++     */
++    NSView *content_view = [ns_window contentView];
++    [content_view setWantsLayer:YES];
++    [[content_view layer] setCornerRadius:12.0];
++    [[content_view layer] setMasksToBounds:YES];
++
++    /*
++     * Match iTerm2's implementation exactly: it asks WindowServer to blur
++     * behind the window with this private CoreGraphics SPI. iTerm truncates
++     * the profile's 9.831225... radius to the integer radius 9 as well.
++     */
++    typedef int (*CGSDefaultConnectionForThreadFunction)(void);
++    typedef int (*CGSSetWindowBackgroundBlurRadiusFunction)(int, int, unsigned long);
++    void *application_services = dlopen(
++        "/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices",
++        RTLD_LAZY);
++    if (application_services != NULL) {
++        CGSDefaultConnectionForThreadFunction default_connection =
++            dlsym(application_services, "CGSDefaultConnectionForThread");
++        CGSSetWindowBackgroundBlurRadiusFunction set_blur_radius =
++            dlsym(application_services, "CGSSetWindowBackgroundBlurRadius");
++        if (default_connection != NULL && set_blur_radius != NULL) {
++            set_blur_radius(default_connection(), (int)[ns_window windowNumber], 9);
++        }
++    }
  
 -    NSView *contentView = [ns_window contentView];
 -    [contentView setWantsLayer:YES];

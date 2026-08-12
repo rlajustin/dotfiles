@@ -9,5 +9,5 @@ exec "$borders_root/bin/borders" \
   style=round \
   active_color=0xff575279 \
   inactive_color=0xff9893a5 \
-  width=3.0 \
+  width=4.0 \
   hidpi=on

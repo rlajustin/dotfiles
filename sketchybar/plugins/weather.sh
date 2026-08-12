@@ -19,6 +19,14 @@ if [ -z "${LAT:-}" ] || [ -z "${LON:-}" ]; then
   LON="$(printf '%s' "$LOCATION_DATA" | /usr/bin/jq -r '.longitude // empty')"
 fi
 
+# ipapi.co can rate-limit shared/public IPs. Fall back to a second provider
+# before giving up; the OpenWeather API key is never sent to either service.
+if [ -z "${LAT:-}" ] || [ -z "${LON:-}" ]; then
+  LOCATION_DATA="$(/usr/bin/curl -fsS --max-time 8 https://ipwho.is/ 2>/dev/null || true)"
+  LAT="$(printf '%s' "$LOCATION_DATA" | /usr/bin/jq -r 'select(.success != false) | .latitude // empty')"
+  LON="$(printf '%s' "$LOCATION_DATA" | /usr/bin/jq -r 'select(.success != false) | .longitude // empty')"
+fi
+
 if [ -z "${LAT:-}" ] || [ -z "${LON:-}" ]; then
   sketchybar --set weather icon="󰖐" label="--°"
   exit 0

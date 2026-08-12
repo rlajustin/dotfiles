@@ -16,11 +16,11 @@ sketchybar --bar position=top \
 
 # Item Defaults
 sketchybar --default \
-           padding_left=2 \
-           padding_right=2 \
+           padding_left=5 \
+           padding_right=5 \
            y_offset=-2 \
-           icon.font="JetBrainsMono Nerd Font:Regular:13.0" \
-           label.font="SF Pro:Semibold:12.0" \
+           icon.font="FiraMono Nerd Font:Regular:13.0" \
+           label.font="FiraMono Nerd Font:Regular:13.0" \
            icon.color="$COLOR_TEXT" \
            label.color="$COLOR_TEXT" \
            icon.padding_left=5 \
@@ -31,6 +31,9 @@ sketchybar --default \
            background.corner_radius=7 \
            background.height=28 \
            blur_radius=20
+
+# Yabai mode indicators share a custom refresh event.
+sketchybar --add event yabai_mode_changed
 
 # --- Items on the right ---
 
@@ -106,5 +109,15 @@ sketchybar --add item front_app left \
                            label.color="$COLOR_LOVE" \
                            script="$PLUGIN_DIR/front_app.sh" \
            --subscribe front_app front_app_switched
+
+# Keep Yabai state beside the current application instead of among system
+# status items. A small rose badge appears only while dimming is enabled.
+sketchybar --add item yabai_layout left \
+           --set yabai_layout padding_right=5 \
+                              icon.padding_right=0 \
+                              label.padding_left=4 \
+                              label.padding_right=5 \
+                              script="$PLUGIN_DIR/yabai_mode.sh" \
+           --subscribe yabai_layout space_change yabai_mode_changed
 
 sketchybar --update

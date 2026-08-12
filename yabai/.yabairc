@@ -8,11 +8,11 @@ YABAI_BIN="${YABAI_BIN:-/opt/homebrew/bin/yabai}"
 sudo -n "$YABAI_BIN" --load-sa >/dev/null 2>&1 || true
 
 "$YABAI_BIN" -m config layout bsp
-"$YABAI_BIN" -m config top_padding 5
-"$YABAI_BIN" -m config bottom_padding 8
-"$YABAI_BIN" -m config left_padding 8
-"$YABAI_BIN" -m config right_padding 8
-"$YABAI_BIN" -m config window_gap 8
+"$YABAI_BIN" -m config top_padding 7
+"$YABAI_BIN" -m config bottom_padding 10
+"$YABAI_BIN" -m config left_padding 10
+"$YABAI_BIN" -m config right_padding 10
+"$YABAI_BIN" -m config window_gap 10
 "$YABAI_BIN" -m config split_ratio 0.50
 "$YABAI_BIN" -m config split_type auto
 "$YABAI_BIN" -m config auto_balance off
@@ -26,7 +26,7 @@ sudo -n "$YABAI_BIN" --load-sa >/dev/null 2>&1 || true
 "$YABAI_BIN" -m config mouse_follows_focus off
 
 # A 34px bar centers its 28px item backgrounds with 3px below them. Combined
-# with 5px top padding, the visible item-to-window gap matches the 8px sides.
+# with 7px top padding, the visible item-to-window gap matches the 10px sides.
 "$YABAI_BIN" -m config external_bar main:34:0
 
 "$YABAI_BIN" -m rule --add app="^System Settings$" manage=off
